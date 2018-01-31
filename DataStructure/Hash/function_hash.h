@@ -37,16 +37,7 @@ class FunctionHash:public DSBase<VALUE>{
 
         void insert(const Node<VALUE>&);
         void remove(const Node<VALUE>&);
-
-        int rehash(int) const;
-
         const VALUE* const find(const Node<VALUE>&) const;
-
-        const VALUE& operator[](std::string) const;
-        const VALUE& operator[](int) const;
-
-        VALUE& operator[](std::string);
-        VALUE& operator[](int);
 
         FunctionHash<VALUE> operator+(const FunctionHash<VALUE>&);
         FunctionHash<VALUE> operator-(const FunctionHash<VALUE>&);
@@ -55,21 +46,11 @@ class FunctionHash:public DSBase<VALUE>{
         FunctionHash<VALUE>& operator+=(const FunctionHash<VALUE>&);
         FunctionHash<VALUE>& operator-=(const FunctionHash<VALUE>&);
 
+        void clear();
         int size();
         void resize(int);
-        void clear();
+        int rehash(int) const;
     private:
-        void insert(const Node<VALUE>& n, int h)
-        {
-            if (length/maxSize > cHashChangeRate)
-                resize(maxSize*2); 
-            
-            while (table.get()[h].status == Node<VALUE>::NodeStatus::Active)
-                h = rehash(h); 
-
-            table.get()[h] = n;
-        }
-
         void opera(FunctionHash<VALUE>&, const FunctionHash<VALUE>&, HashMethod);
 
         FType analyMethod;
@@ -82,7 +63,13 @@ template<class VALUE>
 void FunctionHash<VALUE>::insert(const Node<VALUE>& n)
 {
     int h = n.GetHash(this->maxSize);
-    insert(n, h);
+    if (length/maxSize > cHashChangeRate)
+        resize(maxSize*2); 
+    
+    while (table.get()[h].isAlive())
+        h = rehash(h); 
+
+    table.get()[h] = n;
 }
 
 template<class VALUE>
@@ -119,30 +106,6 @@ const VALUE* const FunctionHash<VALUE>::find(const Node<VALUE>& n) const
     }
 
     return table.get()[h].val();
-}
-
-template<class VALUE>
-const VALUE& FunctionHash<VALUE>::operator[](std::string key) const
-{
-    return this->find(key);
-}
-
-template<class VALUE>
-const VALUE& FunctionHash<VALUE>::operator[](int key) const
-{
-    return this->find(key);
-}
-
-template<class VALUE>
-VALUE& FunctionHash<VALUE>::operator[](std::string key)
-{
-    return *const_cast<VALUE*>(((const FunctionHash<VALUE> *)this)->find(key));
-}
-
-template<class VALUE>
-VALUE& FunctionHash<VALUE>::operator[](int key)
-{
-    return *const_cast<VALUE*>(((const FunctionHash<VALUE> *)this)->find(key));
 }
 
 template<class VALUE>

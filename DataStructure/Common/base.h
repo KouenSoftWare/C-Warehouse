@@ -143,6 +143,19 @@ class DSBase{
             return const_cast<VALUE*>(((const DSBase<VALUE> *)this)->find(n));
         }
 
+        virtual const VALUE& operator[](std::string key) const{
+            return *this->find(key);
+        }
+        virtual const VALUE& operator[](int key) const{
+            return *this->find(key);
+        }
+        virtual VALUE& operator[](std::string key) {
+            return *(const_cast<VALUE*>(((const DSBase<VALUE> *)this)->find(key)));
+        }
+        virtual VALUE& operator[](int key) {
+            return *(const_cast<VALUE*>(((const DSBase<VALUE> *)this)->find(key)));
+        }
+
         virtual void insert(const Node<VALUE>&) = 0;
         virtual void remove(const Node<VALUE>&) = 0;
         virtual const VALUE* const find(const Node<VALUE>&) const = 0;
