@@ -128,18 +128,12 @@ template<class VALUE>
 void FunctionHash<VALUE>::opera(FunctionHash<VALUE>& f1, const FunctionHash<VALUE>& f2, HashMethod sign)
 {
     for (int i=0; i!=f2.maxSize; i++){
-        if (f2.table.get()[i].status != Node<VALUE>::NodeStatus::Active)
+        if (!f2.table.get()[i].isAlive())
             continue;
-        if (f2.table.get()[i].keyType == Node<VALUE>::KeyType::String)
-            if (sign == HashMethod::Insert)
-                f1.insert(f2.table.get()[i].sKey, f2.table.get()[i].value);
-            else
-                f1.remove(f2.table.get()[i].sKey);
+        if (sign == HashMethod::Insert)
+            f1.insert(f2.table.get()[i]);
         else
-            if (sign == HashMethod::Insert)
-                f1.insert(f2.table.get()[i].iKey, f2.table.get()[i].value);
-            else
-                f1.remove(f2.table.get()[i].iKey);
+            f1.remove(f2.table.get()[i]);
     }
 }
 
