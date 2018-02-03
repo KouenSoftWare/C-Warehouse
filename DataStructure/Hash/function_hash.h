@@ -86,9 +86,9 @@ int FunctionHash<VALUE>::rehash(int h) const
 {
     switch (analyMethod){
         case FType::LinerFunction:
-            return h+1;
+            return (h+1)%maxSize;
         case FType::QuadraticFunction:
-            return h*h;
+            return (h*h)%maxSize;
         default:
             throw HashRehashError();
     }
@@ -99,12 +99,15 @@ const VALUE* const FunctionHash<VALUE>::find(const Node<VALUE>& n) const
 {
     int h = n.GetHash(this->maxSize); 
 
+    int repeatPos = h;
     while (table.get()[h].isAlive()){
         if (table.get()[h] == n)
             break;
         h = this->rehash(h);
+        if (h == repeatPos)
+            throw NodeFindError();
     }
-
+     
     return table.get()[h].val();
 }
 

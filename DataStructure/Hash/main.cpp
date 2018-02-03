@@ -27,9 +27,7 @@ int main()
 
     jk::ds::FunctionHash<int> fi;
     jk::ds::FunctionHash<int> fi2(jk::ds::FunctionHash<int>::FType::QuadraticFunction);
-    map<int, int> mi;
     jk::ds::FunctionHash<string> fs;
-    map<string, string> ms;
 
     double x;
     srand((unsigned)time(NULL)); //srand(3)
@@ -66,54 +64,25 @@ int main()
     finish = clock();
     cout << (double)(finish - start) / CLOCKS_PER_SEC << endl;
 
-    start = clock();
-    for (int i=0; i!=1000000; i++){
-        x = 1 + rand() % 10000000;
-        mi[x] = x;
-    }
-    finish = clock();
-    cout << (double)(finish - start) / CLOCKS_PER_SEC << endl;
-    start = clock();
-    for (int i=0; i!=1000000; i++){
-        x = 1 + rand() % 10000000;
-        mi[x];
-    }
-    finish = clock();
-    cout << (double)(finish - start) / CLOCKS_PER_SEC << endl;
-
     vector<string> vs;
     for (int i=0; i!=1000000; i++){
         vs.push_back(GetStr());
     }
 
+    cout << "测试字符串开始" << endl;
     start = clock();
     for (int i=0; i!=1000000; i++){
-        x = 1 + rand() % 1000000;
-        fs[vs[x]] = x;
-    }
-    finish = clock();
-    cout << (double)(finish - start) / CLOCKS_PER_SEC << endl;
-    start = clock();
-    for (int i=0; i!=1000000; i++){
-        x = 1 + rand() % 1000000;
-        fs[vs[x]];
+        fs[vs[i]] = i;
     }
     finish = clock();
     cout << (double)(finish - start) / CLOCKS_PER_SEC << endl;
 
     start = clock();
     for (int i=0; i!=1000000; i++){
-        x = 1 + rand() % 1000000;
-        ms[vs[x]] = vs[x];
+        fs[vs[i]];
     }
     finish = clock();
     cout << (double)(finish - start) / CLOCKS_PER_SEC << endl;
-    start = clock();
-    for (int i=0; i!=1000000; i++){
-        x = 1 + rand() % 1000000;
-        ms[vs[x]];
-    }
-    finish = clock();
-    cout << (double)(finish - start) / CLOCKS_PER_SEC << endl;
+
     return 0;
 }
