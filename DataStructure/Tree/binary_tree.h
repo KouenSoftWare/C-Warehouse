@@ -4,6 +4,8 @@
 #include "../Common/base.h"
 
 #include <memory>
+#include <ostream>
+#include <string>
 
 namespace jk{
 namespace ds{
@@ -43,16 +45,30 @@ class BinaryTree:public DSBase<T_Value>{
         void clear(){}
         Node<T_Value>* pop(){ return nullptr; }
         int size(){ return length; }
-    private:
+
+        void printTree(std::ostream& out) const{
+            printTree(root, out, 0);
+        }
+    protected:
         struct Leaf{
             Node<T_Value> data;
             shared_ptr<Leaf> left;
             shared_ptr<Leaf> right;
+            int height;
 
-            Leaf(const Node<T_Value>& n):data(n), left(), right(){}
+            Leaf(const Node<T_Value>& n):data(n), left(), right(), height(0){}
         };
 
-        void insert(shared_ptr<Leaf>& leaf, const Node<T_Value>& n){
+        void printTree(const shared_ptr<Leaf>& leaf, std::ostream& out, int d) const{
+            std::string space(d, '*');
+            if (leaf.get() != nullptr){
+                out << space << leaf.get()->data.GetHash() << std::endl;
+                printTree(leaf.get()->left, out, d+1);
+                printTree(leaf.get()->right, out, d+1);
+            }
+        }
+
+        virtual void insert(shared_ptr<Leaf>& leaf, const Node<T_Value>& n){
             if (leaf.get() == nullptr){
                 leaf.reset(new Leaf(n));
                 this->length++;
@@ -68,6 +84,8 @@ class BinaryTree:public DSBase<T_Value>{
                     insert(leaf.get()->right, n); 
                 } 
             }
+            int l = height(leaf.get()->left.get()), r = height(leaf.get()->right.get());
+            leaf.get()->height = (l > r ? l : r)+1;
         }
 
         void remove(shared_ptr<Leaf>& leaf, const Node<T_Value>& n){
@@ -97,7 +115,10 @@ class BinaryTree:public DSBase<T_Value>{
             } 
         }
 
-    private:
+        int height(Leaf* leaf){
+            return leaf == nullptr?-1:leaf->height; 
+        }
+    protected:
         int length;
         shared_ptr<Leaf> root;
 };
