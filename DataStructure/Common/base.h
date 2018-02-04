@@ -28,15 +28,15 @@ struct Node{
 
     public:
         Node()
-            :value(), keyType(KeyType::Unkown), status(NodeStatus::Active){ value = std::make_shared<VALUE>();}
+            :sKey(""), iKey(0), value(), keyType(KeyType::Unkown), status(NodeStatus::Active){ value = std::make_shared<VALUE>();}
         Node(std::string k)
-            :sKey(k), value(), keyType(KeyType::String), status(NodeStatus::Active){ value = std::make_shared<VALUE>();}
+            :sKey(k), iKey(0),value(), keyType(KeyType::String), status(NodeStatus::Active){ value = std::make_shared<VALUE>();}
         Node(int k)
-            :iKey(k), value(), keyType(KeyType::Int), status(NodeStatus::Active){ value = std::make_shared<VALUE>();}
+            :sKey(""), iKey(k), value(), keyType(KeyType::Int), status(NodeStatus::Active){ value = std::make_shared<VALUE>();}
         Node(std::string k, const VALUE& v)
-            :sKey(k), value(), keyType(KeyType::String), status(NodeStatus::Active){ value = std::make_shared<VALUE>(v);}
+            :sKey(k), iKey(0), value(), keyType(KeyType::String), status(NodeStatus::Active){ value = std::make_shared<VALUE>(v);}
         Node(int k, const VALUE& v)
-            :iKey(k), value(), keyType(KeyType::Int), status(NodeStatus::Active){ value = std::make_shared<VALUE>(v);}
+            :sKey(""), iKey(k), value(), keyType(KeyType::Int), status(NodeStatus::Active){ value = std::make_shared<VALUE>(v);}
         Node(const Node& n)
             :sKey(n.sKey), iKey(n.iKey), value(n.value), keyType(n.keyType), status(n.status){}
 
@@ -61,6 +61,8 @@ struct Node{
             int h;
             switch (this->keyType){
                 case Node<VALUE>::KeyType::String:
+                    if (sKey.size() == 0)
+                        h = 0;
                     for (auto i: this->sKey){
                         h += (int(i)*10);
                     }
@@ -82,9 +84,36 @@ struct Node{
                 return h;
         }
 
+        bool operator<(const Node<VALUE>& n){
+            if (n.keyType != keyType)
+                throw NodeKeyTypeError();
+            switch (keyType){
+                case Node<VALUE>::KeyType::String:
+                    return sKey < n.sKey;
+                    break;
+                case Node<VALUE>::KeyType::Int:
+                    return iKey < n.iKey;
+                    break;
+                default:
+                    throw NodeKeyTypeError();
+            }
+        }
+
+        bool operator>(const Node<VALUE>& n){
+            return !(this->operator<(n)); 
+        }
+
+        bool operator>=(const Node<VALUE>& n){
+            return this->operator>(n) || this->operator=(n); 
+        }
+
+        bool operator<=(const Node<VALUE>& n){
+            return this->operator<(n) || this->operator=(n); 
+        }
+
         bool operator==(const Node<VALUE>& n){
             if (n.keyType != keyType)
-                return false;
+                throw NodeKeyTypeError();
             switch (keyType){
                 case Node<VALUE>::KeyType::String:
                     return sKey == n.sKey;
