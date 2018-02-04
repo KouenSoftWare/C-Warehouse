@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 #include "binary_tree.h"
-#include "avl_tree.h"
+#include "avl_tree.2.h"
 #include "../Hash/function_hash.h"
 
 using namespace std;

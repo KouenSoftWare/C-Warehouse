@@ -178,6 +178,10 @@ class DSBase{
         virtual void clear() = 0;
 };
 
+template <class T>
+T max(T a, T b){
+    return a > b ? a : b;
+}
 
 
 } // ds namespace end

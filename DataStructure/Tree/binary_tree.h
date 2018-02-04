@@ -1,11 +1,7 @@
 #ifndef JK_DS_BINARY_TREE_H  
 #define JK_DS_BINARY_TREE_H  
 
-#include "../Common/base.h"
-
-#include <memory>
-#include <ostream>
-#include <string>
+#include "tree.h"
 
 namespace jk{
 namespace ds{
@@ -23,9 +19,9 @@ class BinaryTree:public DSBase<T_Value>{
         template<class KEY>
         T_Value& operator[](const KEY& key) {
             Node<T_Value> n(key);
-            shared_ptr<Leaf>& ptr = const_cast<shared_ptr<Leaf>&>(this->find(root, key));
+            shared_ptr<Leaf<T_Value>>& ptr = const_cast<shared_ptr<Leaf<T_Value>>&>(this->find(root, key));
             if (ptr.get() == nullptr) {
-                ptr.reset(new Leaf(n));
+                ptr.reset(new Leaf<T_Value>(n));
                 length++;
             }
             return *(ptr.get()->data.val());
@@ -36,7 +32,7 @@ class BinaryTree:public DSBase<T_Value>{
         }
 
         const T_Value* const find(const Node<T_Value>& n) const{
-            const shared_ptr<Leaf>& p = this->find(root, n);
+            const shared_ptr<Leaf<T_Value>>& p = this->find(root, n);
             if (p.get() != nullptr)
                 return (const T_Value*)p.get()->data.val();
             return nullptr;    
@@ -50,16 +46,7 @@ class BinaryTree:public DSBase<T_Value>{
             printTree(root, out, 0);
         }
     protected:
-        struct Leaf{
-            Node<T_Value> data;
-            shared_ptr<Leaf> left;
-            shared_ptr<Leaf> right;
-            int height;
-
-            Leaf(const Node<T_Value>& n):data(n), left(), right(), height(0){}
-        };
-
-        void printTree(const shared_ptr<Leaf>& leaf, std::ostream& out, int d) const{
+        void printTree(const shared_ptr<Leaf<T_Value>>& leaf, std::ostream& out, int d) const{
             std::string space(d, '*');
             if (leaf.get() != nullptr){
                 out << space << leaf.get()->data.GetHash() << std::endl;
@@ -68,9 +55,9 @@ class BinaryTree:public DSBase<T_Value>{
             }
         }
 
-        virtual void insert(shared_ptr<Leaf>& leaf, const Node<T_Value>& n){
+        virtual void insert(shared_ptr<Leaf<T_Value>>& leaf, const Node<T_Value>& n){
             if (leaf.get() == nullptr){
-                leaf.reset(new Leaf(n));
+                leaf.reset(new Leaf<T_Value>(n));
                 this->length++;
             }else if(!(leaf.get()->data.isAlive())) {
                 leaf.get()->data = n; 
@@ -88,7 +75,7 @@ class BinaryTree:public DSBase<T_Value>{
             leaf.get()->height = (l > r ? l : r)+1;
         }
 
-        void remove(shared_ptr<Leaf>& leaf, const Node<T_Value>& n){
+        void remove(shared_ptr<Leaf<T_Value>>& leaf, const Node<T_Value>& n){
             if (leaf.get() != nullptr){
                 if (leaf.get()->data.GetHash() == n.GetHash()){
                     leaf.get()->data.del(); 
@@ -101,7 +88,7 @@ class BinaryTree:public DSBase<T_Value>{
             } 
         }
 
-        const shared_ptr<Leaf>& find(const shared_ptr<Leaf>& leaf, const Node<T_Value>& n) const{
+        const shared_ptr<Leaf<T_Value>>& find(const shared_ptr<Leaf<T_Value>>& leaf, const Node<T_Value>& n) const{
             if (leaf.get() != nullptr){
                 if (leaf.get()->data.isAlive() && leaf.get()->data.GetHash() == n.GetHash()){
                     return leaf; 
@@ -115,12 +102,12 @@ class BinaryTree:public DSBase<T_Value>{
             } 
         }
 
-        int height(Leaf* leaf){
+        int height(Leaf<T_Value>* leaf){
             return leaf == nullptr?-1:leaf->height; 
         }
     protected:
         int length;
-        shared_ptr<Leaf> root;
+        shared_ptr<Leaf<T_Value>> root;
 };
 
 
