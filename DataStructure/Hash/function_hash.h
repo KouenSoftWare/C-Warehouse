@@ -63,13 +63,16 @@ template<class VALUE>
 void FunctionHash<VALUE>::insert(const Node<VALUE>& n)
 {
     int h = n.GetHash(this->maxSize);
-    if (length/maxSize > cHashChangeRate)
+    if (length/maxSize > cHashChangeRate){
         resize(maxSize*2); 
+    }
     
-    while (table.get()[h].isAlive())
+    while (table.get()[h].isAlive()){
         h = rehash(h); 
+    }
 
     table.get()[h] = n;
+    length++;
 }
 
 template<class VALUE>
@@ -179,12 +182,14 @@ int FunctionHash<VALUE>::size()
 template<class VALUE>
 void FunctionHash<VALUE>::resize(int s)
 {
-    auto newTable = table = std::shared_ptr<Node<VALUE>>(new Node<VALUE>[s], std::default_delete<Node<VALUE>[]>());  
+    auto newTable = std::shared_ptr<Node<VALUE>>(new Node<VALUE>[s], std::default_delete<Node<VALUE>[]>());  
 
     int newPos;
     for (int i=0; i!= this->maxSize; i++){
-        newPos = this->table.get()[i].GetHash(s);
-        newTable.get()[newPos] = this->table.get()[i];
+        if (this->table.get()[i].isAlive()){
+            newPos = this->table.get()[i].GetHash(s);
+            newTable.get()[newPos] = this->table.get()[i];
+        }
     }
 
     this->table = newTable;

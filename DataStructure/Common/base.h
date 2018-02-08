@@ -17,7 +17,7 @@ template<class VALUE>
 struct Node{
     public:
         enum NodeStatus{Delete, Active, Null};
-        enum KeyType{String, Int, Unkown};
+        enum KeyType{String, Int};
 
     private:
         std::string sKey; 
@@ -28,15 +28,15 @@ struct Node{
 
     public:
         Node()
-            :sKey(""), iKey(0), value(), keyType(KeyType::Unkown), status(NodeStatus::Active){ value = std::make_shared<VALUE>();}
+            :sKey(""), iKey(0), value(), keyType(KeyType::Int), status(NodeStatus::Null){ value = std::make_shared<VALUE>();}
         Node(std::string k)
-            :sKey(k), iKey(0),value(), keyType(KeyType::String), status(NodeStatus::Active){ value = std::make_shared<VALUE>();}
+            :sKey(k), iKey(0),value(), keyType(KeyType::String), status(NodeStatus::Null){ value = std::make_shared<VALUE>();}
         Node(int k)
-            :sKey(""), iKey(k), value(), keyType(KeyType::Int), status(NodeStatus::Active){ value = std::make_shared<VALUE>();}
+            :sKey(""), iKey(k), value(), keyType(KeyType::Int), status(NodeStatus::Null){ value = std::make_shared<VALUE>();}
         Node(std::string k, const VALUE& v)
-            :sKey(k), iKey(0), value(), keyType(KeyType::String), status(NodeStatus::Active){ value = std::make_shared<VALUE>(v);}
+            :sKey(k), iKey(0), value(), keyType(KeyType::String), status(NodeStatus::Null){ value = std::make_shared<VALUE>(v);}
         Node(int k, const VALUE& v)
-            :sKey(""), iKey(k), value(), keyType(KeyType::Int), status(NodeStatus::Active){ value = std::make_shared<VALUE>(v);}
+            :sKey(""), iKey(k), value(), keyType(KeyType::Int), status(NodeStatus::Null){ value = std::make_shared<VALUE>(v);}
         Node(const Node& n)
             :sKey(n.sKey), iKey(n.iKey), value(n.value), keyType(n.keyType), status(n.status){}
 
@@ -47,7 +47,7 @@ struct Node{
 
             this->iKey = n.iKey; 
             this->sKey = n.sKey; 
-            *(this->value.get()) = *n.value.get(); 
+            this->value.reset(new VALUE(*n.value.get())); 
             this->status = n.status; 
             this->keyType = n.keyType; 
             return *this;
@@ -104,11 +104,11 @@ struct Node{
         }
 
         bool operator>=(const Node<VALUE>& n){
-            return this->operator>(n) || this->operator=(n); 
+            return this->operator>(n) || this->operator==(n); 
         }
 
         bool operator<=(const Node<VALUE>& n){
-            return this->operator<(n) || this->operator=(n); 
+            return this->operator<(n) || this->operator==(n); 
         }
 
         bool operator==(const Node<VALUE>& n){
@@ -128,6 +128,9 @@ struct Node{
         
         bool isAlive(){
             return status == NodeStatus::Active; 
+        }
+        void setAlive(){
+            status = NodeStatus::Active; 
         }
 
         VALUE* val(){
@@ -150,10 +153,12 @@ class DSBase{
 
         virtual void insert(std::string key, const VALUE& value){
             Node<VALUE> n(key, value);
+            n.setAlive();
             this->insert(n);
         }
         virtual void insert(int key, const VALUE& value){
             Node<VALUE> n(key, value);
+            n.setAlive();
             this->insert(n);
         }
 

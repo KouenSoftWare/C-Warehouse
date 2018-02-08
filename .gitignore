@@ -35,4 +35,5 @@ cmake-build-debug
 # Executables
 *.exe
 *.out
+*.dSYM
 *.app
