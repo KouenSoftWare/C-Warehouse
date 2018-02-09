@@ -6,11 +6,13 @@
 
 #include "binary_tree.h"
 #include "avl_tree.h"
+#include "hash_tree.h"
 #include "b_tree.h"
 #include "../Hash/function_hash.h"
 
 using namespace std;
 using jk::ds::BinaryTree;
+using jk::ds::HashTree;
 using jk::ds::AVLTree;
 using jk::ds::BTree;
 
@@ -46,6 +48,7 @@ int main()
     BinaryTree<int> bi;
     AVLTree<int> ai;
     BTree<int, 10> bbi;
+    HashTree<int> hi;
     jk::ds::FunctionHash<int> vi;
     srand((unsigned)time(NULL)); //srand(3)
 
@@ -54,6 +57,7 @@ int main()
     Test(&bi, "二叉树");
     Test(&ai, "平衡树");
     Test(&bbi, "B树");
+    Test(&hi, "Hash树");
 
     return 0;
 }

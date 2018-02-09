@@ -206,10 +206,11 @@ class DSBase{
             return *(const_cast<VALUE*>(((const DSBase<VALUE> *)this)->find(key)));
         }
 
+        virtual void clear() {}
+
         virtual void insert(const Node<VALUE>&) = 0;
         virtual void remove(const Node<VALUE>&) = 0;
         virtual const VALUE* const find(const Node<VALUE>&) const = 0;
-        virtual void clear() = 0;
 };
 
 template <class T>
